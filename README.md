@@ -37,6 +37,7 @@ Time Series Plotting
 - **babynames:** Data set containing baby names and their frequencies by year.
 - **stringdist:** Calculating string distances using various metrics.
 
+### Exploratory Analysis
 
 
 
