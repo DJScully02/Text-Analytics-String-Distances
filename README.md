@@ -12,6 +12,7 @@
 ### Data Source
 The dataset we are using is from the babynames library and iscalled 'babynames' it was collected by the Social Security Administration (SSA), It was collected from the years 1880 to 2017, it has columns for the name, how many children were named that name, their gender, the year, and the proportion. This dataset also only takes into account names that have over 5 uses.
 
+You can check out the 'babynames' github [here](https://github.com/hadley/babynames).
 ### Project Categories
 
 **Data Science, Text Analytics, String Matching/Distance Calculation, Data Visualization, R Programming**
@@ -206,8 +207,9 @@ The Jaccard distance did not perform well because it measures similarity based o
 ### References
 1. [Irene-arch](https://github.com/Irene-arch/Documenting_Example/blob/main/README.md)
 2. [Dr. Aaron Smith](https://www.statistics.ninja/home)
-3. [The Great Depression](https://www.federalreservehistory.org/essays/great-depression)
-4. [Post-World War II Baby Boom](https://www.khanacademy.org/humanities/us-history/postwarera/postwar-era/a/the-baby-boom)
-5. [Economic Challenges in the 1970s](https://www.khanacademy.org/humanities/us-history/postwarera/1970s-america/a/stagflation-and-the-oil-crisis#:~:text=Unemployment%20rates%20rose%2C%20while%20a,wage%2D%20and%20price%2Dfreezes.)
-6. [Economic Stabilization (1980s-Early 2000s)](https://www.nber.org/system/files/working_papers/w22693/w22693.pdf)
-7. [Great Recession (2007-2009)](https://www.federalreservehistory.org/essays/great-recession-of-200709)
+3. [Baby Names Github](https://github.com/hadley/babynames)
+4. [The Great Depression](https://www.federalreservehistory.org/essays/great-depression)
+5. [Post-World War II Baby Boom](https://www.khanacademy.org/humanities/us-history/postwarera/postwar-era/a/the-baby-boom)
+6. [Economic Challenges in the 1970s](https://www.khanacademy.org/humanities/us-history/postwarera/1970s-america/a/stagflation-and-the-oil-crisis#:~:text=Unemployment%20rates%20rose%2C%20while%20a,wage%2D%20and%20price%2Dfreezes.)
+7. [Economic Stabilization (1980s-Early 2000s)](https://www.nber.org/system/files/working_papers/w22693/w22693.pdf)
+8. [Great Recession (2007-2009)](https://www.federalreservehistory.org/essays/great-recession-of-200709)
