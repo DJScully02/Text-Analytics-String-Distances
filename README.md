@@ -6,7 +6,7 @@
 - [Exploratory Analysis](#exploratory-analysis)
 - [Correlation Table and Plot for each method](#correlation-table-and-plot-for-each-method)
 - [Comparison of String Distance Metrics](#comparison-of-string-distance-metrics)
-- [Closest Matches per Distance Metric](#closest-matches-per-distance-metric)
+- [Closest Matches per Distance Metric and End Results](#closest-matches-per-distance-metric-and-end-results)
 - [References](#references)
 
 ### Data Source
@@ -179,7 +179,7 @@ The Cosine Distance preformed very similarly to the Q-Gram Distance. Where we ge
 
 The Soundex Distance graphs preformed notatably the worst as expected. The most popular name we see is "Carsten" which saw an increase in popularity starting around the 1990's and peaking in the late 2000's. 
 
-### Closest Matches per Distance Metric
+### Closest Matches per Distance Metric and End Results
 
 | lcs          | lv           | osa          | dl           | qgram       | jw           | jaccard      | cosine       | soundex       |
 |--------------|--------------|--------------|--------------|-------------|--------------|--------------|--------------|---------------|
