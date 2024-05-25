@@ -1,0 +1,195 @@
+title: "Text Analytics: String Distances CS"
+author: "Christian Scully"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+# Load necessary libraries
+library(dplyr)
+library(viridis)
+library(ggplot2)
+library(babynames)
+library(stringdist)
+library(corrplot)
+library(gridExtra)
+
+M <- as.data.frame(babynames::babynames)
+set.seed(123) # Set seed for reproducibility
+```
+
+# Project Goals
+For each of the different ways to compute string distances in R we want to:
+
+1. Find the ten names in the babynames::babynames data set that are the most similar to the first name Christian.
+
+2. Plot the names as times series by year.
+
+3. Articulate the similarities and differences we notice about each metric.
+
+
+# Data Description
+Describe the `babynames` dataset.
+
+The dataset we are using is called 'babynames' it was collected by the Social Security Administration (SSA), It was collected from the years 1880 to 2017, it has columns for the name, how many children were named that name, their gender, the year, and the proportion. This dataset also only takes into account names that have over 5 uses.
+
+https://github.com/hadley/babynames
+
+```{r num births}
+# Summarize the data to ensure each year has aggregated birth data
+births_data <- babynames::births %>%
+  group_by(year) %>%
+  summarize(total_births = sum(births))
+
+# Create the plot with more vibrant colors
+ggplot(births_data) +
+  aes(x = year, y = total_births, color = factor(year), group = 1) +
+  geom_line(size = 1) +
+  scale_color_viridis_d() + # Using a vibrant color palette
+  theme_minimal(base_size = 15) +
+  ggtitle("Live Births Data from Census.gov") +
+  labs(color = "Year", y = "Total Births") + # Adding labels for the legend and y-axis
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.position = "none" # Hiding the legend
+  )
+```
+
+```{r num f vs m}
+# Summarize the data to get the total number of births for each year and sex
+births_data <- babynames::babynames %>%
+  group_by(year, sex) %>%
+  summarize(total_births = sum(n))
+
+# Plot of total female and male per year
+ggplot(births_data, aes(x = year, y = total_births, color = sex)) +
+  geom_line(size = 1) +
+  scale_color_manual(values = c("F" = "deeppink3", "M" = "blue")) + # Specifying colors
+  theme_minimal(base_size = 15) + # Using a minimal theme with larger base font size
+  ggtitle("Number of Females and Males Over Time") +
+  labs(color = "Sex", y = "Total Births") + # Adding labels for the legend and y-axis
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"), # Centering and bolding the title
+    legend.position = "right" # Positioning the legend on the right
+  )
+```
+
+```{r Christian baby name}
+M_Christian <- M[M$name == "Christian",]
+ggplot(M_Christian) + 
+  aes(x = year,y = n,group = sex,color = sex) + 
+  geom_line() + 
+  theme_bw() + 
+  ggtitle("Time series of SSA records for the name Christian Male vs Female ") + 
+  scale_color_manual(values = c("deeppink3","blue"))
+```
+
+```{r calc string distance}
+# Function to calculate string distances
+calculate_string_distances <- function(name, methods) {
+  v_names <- sort(unique(babynames::babynames$name))
+  distances <- sapply(methods, function(method) {
+    stringdist::stringdist(a = name, b = v_names, method = method)
+  })
+  rownames(distances) <- v_names
+  colnames(distances) <- methods
+  distances
+}
+
+# Function to plot time series
+plot_time_series <- function(data, distance_name, gender = NULL) {
+  title_suffix <- ifelse(is.null(gender), "Total for both genders", paste(gender, "only"))
+  ggplot(data) + 
+    aes(x = year, y = n, group = name, color = name) + 
+    geom_line() + 
+    theme_bw() + 
+    ggtitle(paste("Time series of SSA records for the names similar to Christian", title_suffix), 
+            subtitle = paste(distance_name, "distance"))
+}
+
+# Function to generate plots
+generate_plots <- function(M, distances, method) {
+  v_names <- rownames(distances)[order(distances[, method])]
+  top_names <- v_names[1:10]
+  M_top <- M[M$name %in% top_names,]
+  
+  M_top_f <- M_top[M_top$sex == "F",]
+  M_top_m <- M_top[M_top$sex == "M",]
+  
+  plot_females <- plot_time_series(M_top_f, method, "Females")
+  plot_males <- plot_time_series(M_top_m, method, "Males")
+  grid.arrange(plot_females, plot_males, ncol = 2)
+  
+  M_total <- M_top %>%
+    group_by(year, name) %>%
+    summarise(n = sum(n)) %>%
+    ungroup()
+  plot_total <- plot_time_series(M_total, method)
+  
+  list(plot_females = plot_females, plot_males = plot_males, plot_total = plot_total)
+}
+
+methods <- c("lcs", "lv", "osa", "dl", "qgram", "jw", "jaccard", "cosine", "soundex")
+stringdist_Christian <- calculate_string_distances("Christian", methods)
+```
+
+```{r string distances}
+# Calculate string distances
+head(stringdist_Christian)
+
+# Display the names most similar to "Christian" based on each method
+apply(stringdist_Christian, 2, function(col) head(rownames(stringdist_Christian)[order(col)], 10))
+```
+
+```{r Correlation plot}
+# Correlation plot using ward.D
+round(cor(stringdist_Christian),3)
+
+corrplot::corrplot(
+  corr = cor(stringdist_Christian),
+  order = "hclust",
+  hclust.method = "ward.D"
+)
+
+# Add the title
+title(main = "Correlation Matrix of String Distance Methods for 'Christian'", line = 3)
+```
+
+
+```{r dl plots}
+generate_plots(M, stringdist_Christian, "dl")
+```
+
+
+```{r osa plots}
+generate_plots(M, stringdist_Christian, "osa")
+```
+
+```{r lcs plots}
+generate_plots(M, stringdist_Christian, "lcs")
+```
+
+```{r lv plots}
+generate_plots(M, stringdist_Christian, "lv")
+```
+
+
+```{r qgram plots}
+generate_plots(M, stringdist_Christian, "qgram")
+```
+
+```{r jw plots}
+generate_plots(M, stringdist_Christian, "jw")
+```
+
+```{r jaccard plots}
+generate_plots(M, stringdist_Christian, "jaccard")
+```
+
+```{r cosine plots}
+generate_plots(M, stringdist_Christian, "cosine")
+```
+
+```{r soundex plots}
+generate_plots(M, stringdist_Christian, "soundex")
+```
+
